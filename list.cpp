@@ -280,9 +280,10 @@ public:
 		while (start != _header)
 		{
 			Node* next = start->_next;
-			delete _start;
+			delete start;
 			start = next;
 		}
+		_header->_next = _header->_prev = _header;
 	}
 
 	~List()
@@ -293,6 +294,57 @@ public:
 			delete _header;
 			_header = nullptr;
 		}
+	}
+
+	size_t size() const
+	{
+		size_t count = 0;
+		Node* cur = _header->_next;
+		while (cur != _header)
+		{
+			++count;
+			cur = cur->_next;
+		}
+		return count;
+	}
+
+	List(const List<T>& lst)
+		:_header(new Node)
+	{
+		//深拷贝
+		_header->_next = _header->_prev = _header;
+
+		List<T>::const_iterator it = lst.begin();
+		while (it != lst.end())
+		{
+			pushBack(*it);
+			++it;
+		}
+	}
+
+	//List<T>& operator=(const List<T>& lst)
+	//{
+	//	if (this != &lst)
+	//	{
+	//		//清空原有内容
+	//		clear();
+	//		//深拷贝
+
+	//		List<T>::const_iterator it = lst.begin();
+	//		while (it != lst.end())
+	//		{
+	//			pushBack(*it);
+	//			++it;
+	//		}
+	//	}
+	//	return *this;
+	//}
+
+	//现代写法
+	List<T>& operator=(List<T> lst)
+	{
+		swap(_header, lst._header);
+		return *this;
 	}
 
 private:
@@ -319,115 +371,23 @@ void test()
 	lst.pushBack(2);
 	lst.pushBack(3);
 	lst.pushBack(4);
-
-	//迭代器遍历
-	List<int>::iterator it = lst.begin();
-	while (it != lst.end())
-	{
-		cout << *it << " ";
-		++it;
-	}
-	cout << endl;
-}
-
-void test2()
-{
-	C c;
-	C* pc = &c;
-	pc->_a = 10;
-	pc->_b = 20;
-}
-
-void test3()
-{
-	List<C> lst;
-	lst.pushBack(C());
-	lst.pushBack(C());
-	lst.pushBack(C());
-	lst.pushBack(C());
-
-	List<C>::iterator it = lst.begin();
-	while (it != lst.end())
-	{
-		cout << (*it)._a << (*it)._b << (*it)._c << endl;
-		cout << it->_a << it.operator->()->_b << it->_c << endl;
-		++it;
-	}
-}
-
-void test4()
-{
-	List<int> lst;
-	lst.pushBack(1);
-	lst.pushBack(2);
-	lst.pushBack(3);
-	lst.pushBack(4);
-
-	printList(lst);
-}
-
-void test5()
-{
-	List<int> lst;
-	lst.insert(lst.begin(), 1);
-	lst.insert(lst.end(), 2);
-	List<int>::iterator it = lst.begin();
-	cout << *it << endl;
-	lst.insert(it, 0);
-	cout << *it << endl;
-	lst.insert(it, -1);
-	cout << *it << endl;
-
-	printList(lst);
-}
-
-void test6()
-{
-	List<int> lst;
 	lst.pushBack(5);
 	lst.pushBack(6);
-	lst.pushBack(7);
-	lst.pushFront(4);
-	lst.pushFront(3);
-	lst.pushBack(8);
-	lst.pushFront(2);
+
+	cout << sizeof(lst) << endl;
+
+	List<int> copy(lst);
+
 	printList(lst);
+	printList(copy);
+
+	List<int> lst2;
+	lst2.pushBack(100);
+	lst2 = lst;
+
 }
-
-void test7()
-{
-	List<int> lst;
-	lst.pushBack(5);
-	lst.pushBack(6);
-	lst.pushBack(7);
-	lst.pushFront(4);
-	lst.pushFront(3);
-	lst.pushBack(8);
-	lst.pushFront(2);
-	printList(lst);
-	List<int>::iterator it = lst.begin();
-	List<int>::iterator it2 = lst.end();
-
-	it = lst.erase(it);
-	cout << *it << endl;
-	printList(lst);
-	it2 = lst.erase(--it2);
-	/*cout << *it2 << endl;*/
-	printList(lst);
-
-	lst.popBack();
-	printList(lst);
-	lst.popFront();
-	printList(lst);
-}
-
-int main()
-{
-	//test();
-	//test3();
-	//test4();
-	//test5();
-	//test6();
-	test7();
-	return 0;
-}
+//int main()
+//{
+//	test();
+//	return 0;
+//}
